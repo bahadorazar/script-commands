@@ -1,0 +1,30 @@
+[
+  {
+    "title": "None",
+    "value": "__NONE__"
+  },
+  {
+    "title": "Write professionally",
+    "value": "Rewrite this text in professional chill language. "
+  },
+  {
+    "title": "Make it concise",
+    "value": "Make this text more concise while keeping all important information: "
+  },
+  {
+    "title": "Fix grammar",
+    "value": "Fix any grammar and spelling errors in this text: "
+  },
+  {
+    "title": "Explain to dev",
+    "value": "Explain this to a junior developer: "
+  },
+  {
+    "title": "English to Norwegian",
+    "value": "Write the following in natural Norwegian. Do not use uncommon phrases or words. Use common words and phrases."
+  },
+  {
+    "title": "Norwegian to English",
+    "value": "What is the meaning of the following Norwegian text in English: "
+  }
+]

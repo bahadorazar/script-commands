@@ -1,0 +1,21 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Editor / swap files
+*~
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Local secrets (if you add env files for API keys)
+.env
+.env.*
+!.env.example
+
+# Python (sync-prompts.sh uses inline python3)
+__pycache__/
+*.py[cod]

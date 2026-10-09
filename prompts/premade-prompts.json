@@ -4,20 +4,20 @@
     "value": "__NONE__"
   },
   {
-    "title": "Write professionally",
-    "value": "Rewrite this text in professional chill language. "
+    "title": "Professional chill",
+    "value": "Rewrite this text in professional chill language. Make it concise and keep all important information. It should be easy to read and understand."
   },
   {
-    "title": "Make it concise",
-    "value": "Make this text more concise while keeping all important information: "
+    "title": "Concise",
+    "value": "Make it concise and keep all important information. It should be easy to read and understand. Do not change the tone of the text."
   },
   {
-    "title": "Fix grammar",
-    "value": "Fix any grammar and spelling errors in this text: "
+    "title": "Proofread",
+    "value": "Proofread this text for any grammar and spelling errors. Remove any ambiguity from the text. Do not change the tone of the text."
   },
   {
-    "title": "Explain to dev",
-    "value": "Explain this to a junior developer: "
+    "title": "Define",
+    "value": "Define the following word or expression in US English (use the same format as you'd get from typeing `define <word>` in google, most common use cases and examples). Also give natural equivalent of the word in Persian."
   },
   {
     "title": "English to Norwegian",

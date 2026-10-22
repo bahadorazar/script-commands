@@ -9,44 +9,68 @@ JSON_FILE="${PROMPTS_DIR}/premade-prompts.json"
 GPT_SCRIPT="${SCRIPT_DIR}/gpt.sh"
 TEMPGPT_SCRIPT="${SCRIPT_DIR}/tempgpt.sh"
 
-# Generate dropdown data from JSON
-export JSON_FILE
-DROPDOWN_DATA=$(python3 << 'PYTHON_EOF'
+export JSON_FILE GPT_SCRIPT TEMPGPT_SCRIPT
+python3 << 'PYTHON_EOF'
 import json
 import os
 
-json_file = os.environ.get('JSON_FILE')
-with open(json_file, 'r') as f:
+json_file = os.environ["JSON_FILE"]
+gpt_script = os.environ["GPT_SCRIPT"]
+tempgpt_script = os.environ["TEMPGPT_SCRIPT"]
+
+with open(json_file, "r", encoding="utf-8") as f:
     prompts = json.load(f)
 
-# Generate the dropdown data format for Raycast
-dropdown_items = []
+data_items = []
+inserted_standalone_header = False
 for item in prompts:
-    title = json.dumps(item['title'])[1:-1]  # Remove outer quotes
-    value = json.dumps(item['value'])[1:-1]  # Remove outer quotes, properly escaped
-    dropdown_items.append(f'{{"title": "{title}", "value": "{value}"}}')
+    title = item["title"]
+    value = item["value"]
+    if item.get("standalone"):
+        if not inserted_standalone_header:
+            data_items.append({"title": "— No input needed —", "value": "__SEPARATOR__"})
+            inserted_standalone_header = True
+        title = f"⚡ {title}"
+        value = f"__STANDALONE__:{value}"
+    data_items.append({"title": title, "value": value})
 
-dropdown_data = ', '.join(dropdown_items)
-print(f'[{dropdown_data}]')
-PYTHON_EOF
-)
-
-# Function to update dropdown in a script file
-update_script() {
-    local script_file="$1"
-    local temp_file=$(mktemp)
-    
-    # Use sed to replace the dropdown data line
-    sed "s|@raycast.argument2.*|@raycast.argument2 { \"type\": \"dropdown\", \"optional\": true, \"placeholder\": \"Select a premade prompt (optional)\", \"default\": \"__NONE__\", \"data\": ${DROPDOWN_DATA} }|" "$script_file" > "$temp_file"
-    mv "$temp_file" "$script_file"
+argument2 = {
+    "type": "dropdown",
+    "optional": True,
+    "placeholder": "Select a premade prompt (optional)",
+    "default": "__NONE__",
+    "data": data_items,
 }
+argument2_json = json.dumps(argument2, ensure_ascii=False)
+# Raycast expects a space after "{" (same as other @raycast.argument lines)
+argument2_line = f"# @raycast.argument2 {{ {argument2_json[1:].lstrip()}\n"
 
-# Update both scripts
-echo "Syncing prompts to gpt.sh..."
-update_script "$GPT_SCRIPT"
 
-echo "Syncing prompts to tempgpt.sh..."
-update_script "$TEMPGPT_SCRIPT"
+def update_script(script_path: str) -> None:
+    with open(script_path, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+
+    new_lines = []
+    skipping_broken_argument2 = False
+    for line in lines:
+        if line.startswith("# @raycast.argument2"):
+            new_lines.append(argument2_line)
+            skipping_broken_argument2 = True
+            continue
+        if skipping_broken_argument2:
+            if line.startswith("# @raycast.argument3"):
+                skipping_broken_argument2 = False
+                new_lines.append(line)
+            continue
+        new_lines.append(line)
+
+    with open(script_path, "w", encoding="utf-8") as f:
+        f.writelines(new_lines)
+
+
+for path in (gpt_script, tempgpt_script):
+    update_script(path)
+    print(f"Synced {path}")
+PYTHON_EOF
 
 echo "Done! Both scripts have been updated with prompts from prompts/premade-prompts.json"
-
